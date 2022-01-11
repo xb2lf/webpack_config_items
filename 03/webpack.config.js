@@ -3,9 +3,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const CommonCSSLoader = [
-  'style-loader',
+  /* 'style-loader', */
+  'vue-style-loader',
   /* {
     loader: MiniCssExtractPlugin.loader,
     options: {
@@ -67,6 +69,13 @@ module.exports = {
             ],
           ],
           cacheDirectory: true,
+        },
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          outputPath: 'vue/',
         },
       },
       {
@@ -143,6 +152,7 @@ module.exports = {
       filename: 'css/[name]_[contenthash:10].css',
     }),
     new OptimizeCssAssetsWebpackPlugin(),
+    new VueLoaderPlugin(),
   ],
   mode: 'development',
   devServer: {
@@ -157,7 +167,7 @@ module.exports = {
       '@css': path.resolve(__dirname, 'src/css'),
       '@': path.resolve(__dirname, 'src'),
     },
-    extensions: ['.js', 'json', 'jsx'],
+    extensions: ['.js', 'json', 'jsx', 'vue'],
     modules: [path.resolve(__dirname, '../../node_modules'), 'node_modules'],
   },
   optimization: {

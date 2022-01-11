@@ -1,0 +1,13 @@
+.img-group {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.img-group img {
+  width: 200px;
+  height: 200px;
+}
