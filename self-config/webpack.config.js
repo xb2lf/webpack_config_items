@@ -5,7 +5,12 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 
 const CommonCSSLoader = [
-  'style-loader',
+  {
+    loader: 'style-loader',
+    options: {
+      injectType: 'singletonStyleTag',
+    },
+  },
   /* {
     loader: MiniCssExtractPlugin.loader,
     options: {
@@ -157,7 +162,7 @@ module.exports = {
       '@css': path.resolve(__dirname, 'src/css'),
       '@': path.resolve(__dirname, 'src'),
     },
-    extensions: ['.js', 'json', 'jsx'],
+    extensions: ['.js', '.json', '.jsx'],
     modules: [path.resolve(__dirname, '../../node_modules'), 'node_modules'],
   },
   optimization: {

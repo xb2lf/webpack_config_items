@@ -4,10 +4,17 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 const CommonCSSLoader = [
-  /* 'style-loader', */
-  'vue-style-loader',
+  {
+    /* loader: 'style-loader', */
+    loader: 'vue-style-loader',
+    options: {
+      injectType: 'singletonStyleTag',
+    },
+
+  },
   /* {
     loader: MiniCssExtractPlugin.loader,
     options: {
@@ -46,6 +53,15 @@ module.exports = {
         ],
       },
       {
+        test: /\.(js|vue)$/,
+        loader: 'eslint-loader',
+        enforce: 'pre',
+        exclude: /node_modules/,
+        options: {
+          fix: true,
+        },
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
@@ -74,9 +90,6 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        options: {
-          outputPath: 'vue/',
-        },
       },
       {
         test: /\.(jpg|png|webp|gif|svg)$/,
@@ -84,7 +97,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              outputPath: 'img/',
+              outputPath: 'assets/images/',
               limit: 6 * 1024,
               name: '[hash:10].[ext]',
               esModule: false,
@@ -134,7 +147,7 @@ module.exports = {
         exclude: /\.(html|vue|js|css|less|jpg|png|webp|gif|svg)$/,
         loader: 'file-loader',
         options: {
-          outputPath: 'media/',
+          outputPath: 'assets/media/',
           name: '[hash:10].[ext]',
         },
       },
@@ -143,6 +156,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
+      favicon: './public/favicon.ico',
       minify: {
         collapseWhitespace: true,
         removeComments: true,
@@ -153,6 +167,13 @@ module.exports = {
     }),
     new OptimizeCssAssetsWebpackPlugin(),
     new VueLoaderPlugin(),
+    new StyleLintPlugin({
+      files: ['**/*.{css,sss,less,scss,sass}'],
+      exclude: ['node_modules', 'dist'],
+      extensions: ['css', 'less', 'scss', 'sass'],
+      threads: true,
+      fix: true,
+    }),
   ],
   mode: 'development',
   devServer: {
@@ -164,10 +185,10 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@css': path.resolve(__dirname, 'src/css'),
+      '@assets': path.resolve(__dirname, 'src/assets'),
       '@': path.resolve(__dirname, 'src'),
     },
-    extensions: ['.js', 'json', 'jsx', 'vue'],
+    extensions: ['.js', '.json', '.jsx', '.vue'],
     modules: [path.resolve(__dirname, '../../node_modules'), 'node_modules'],
   },
   optimization: {
