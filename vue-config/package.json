@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "cross-env NODE_ENV=development webpack-dev-server --config=webpack.dev.config.js",
+    "build": "cross-env NODE_ENV=production webpack --config=webpack.prod.dl.js && webpack --config=webpack.prod.config.js"
   },
   "keywords": [],
   "author": "",
@@ -83,7 +84,8 @@
     "*.css",
     "*.less",
     "*.scss",
-    "*.sass"
+    "*.sass",
+    "*.vue"
   ],
   "dependencies": {
     "element-ui": "^2.15.1",

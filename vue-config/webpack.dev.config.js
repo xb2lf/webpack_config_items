@@ -1,10 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
-const TerserWebpackPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const CommonCSSLoader = [
   {
     /* loader: 'style-loader', */
@@ -14,13 +12,12 @@ const CommonCSSLoader = [
     },
 
   },
-  /* {
-    loader: MiniCssExtractPlugin.loader,
+  {
+    loader: 'css-loader',
     options: {
-      publicPath: '../',
+      modules: true,
     },
-  }, */
-  'css-loader',
+  },
   {
     loader: 'postcss-loader',
     options: {
@@ -33,9 +30,9 @@ const CommonCSSLoader = [
 ];
 
 module.exports = {
-  entry: './src/main.js',
+  entry: ['./src/main.js', './public/index.html'],
   output: {
-    filename: this.mode === 'production' ? 'js/[name].[contenthash:10].js' : 'js/[name].[hash:10].js',
+    filename: 'js/[name].[hash:10].js',
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
@@ -152,7 +149,7 @@ module.exports = {
             loader: 'html-loader',
           },
           {
-            exclude: /\.(html|vue|js|css|lesssass|scss|jpg|png|webp|gif|svg)$/,
+            exclude: /\.(html|vue|js|css|less|sass|scss|jpg|png|webp|gif|svg)$/,
             loader: 'file-loader',
             options: {
               outputPath: 'assets/media/',
@@ -172,10 +169,6 @@ module.exports = {
         removeComments: true,
       },
     }),
-    new MiniCssExtractPlugin({
-      filename: 'css/[name]_[contenthash:10].css',
-    }),
-    new OptimizeCssAssetsWebpackPlugin(),
     new VueLoaderPlugin(),
     new StyleLintPlugin({
       files: ['**/*.{css,sss,less,scss,sass}'],
@@ -183,6 +176,14 @@ module.exports = {
       extensions: ['css', 'less', 'scss', 'sass'],
       threads: true,
       fix: true,
+    }),
+    /**
+     * 1. 帮助serviceworker快速启动
+     * 2. 删除旧的serviceworker
+    */
+    new WorkboxWebpackPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
     }),
   ],
   mode: 'development',
@@ -199,7 +200,7 @@ module.exports = {
       '@': path.resolve(__dirname, 'src'),
     },
     extensions: ['.js', '.json', '.jsx', '.vue'],
-    modules: [path.resolve(__dirname, '../../node_modules'), 'node_modules'],
+    modules: [path.resolve(__dirname, './node_modules'), 'node_modules'],
   },
   optimization: {
     splitChunks: {
@@ -210,29 +211,6 @@ module.exports = {
     runtimeChunk: {
       name: (entrypoint) => `runtime-${entrypoint.name}`,
     },
-    // 开启压缩
-    minimize: true,
-    minimizer: [
-      // 配置生产环境的压缩方案：js和css
-      new TerserWebpackPlugin({
-        // 开启缓存
-        cache: true,
-        // 开启多进程打包
-        parallel: true,
-        // 启用source-map
-        sourceMap: true,
-        // 移除注释
-        extractComments: true,
-        terserOptions: {
-          compress: {
-            warnings: true,
-            drop_console: true,
-            drop_debugger: true,
-            pure_funcs: ['console.log'], // 移除console
-          },
-        },
-      }),
-    ],
   },
   devtool: 'eval-source-map',
 };
