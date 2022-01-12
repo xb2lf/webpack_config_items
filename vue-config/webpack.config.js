@@ -5,7 +5,6 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
-
 const CommonCSSLoader = [
   {
     /* loader: 'style-loader', */
@@ -42,17 +41,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [...CommonCSSLoader],
-      },
-      {
-        test: /\.less$/,
-        use: [
-          ...CommonCSSLoader,
-          'less-loader',
-        ],
-      },
-      {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
         enforce: 'pre',
@@ -62,94 +50,116 @@ module.exports = {
         },
       },
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            [
-              '@babel/preset-env',
-              {
-                useBuiltIns: 'usage',
-                corejs: {
-                  version: 3,
-                },
-                targets: {
-                  chrome: '60',
-                  firefox: '50',
-                  ie: '9',
-                  safari: '10',
-                  edge: '17',
-                },
-              },
-            ],
-          ],
-          cacheDirectory: true,
-        },
-      },
-      {
         test: /\.vue$/,
         loader: 'vue-loader',
       },
       {
-        test: /\.(jpg|png|webp|gif|svg)$/,
-        use: [
+        oneOf: [
           {
-            loader: 'url-loader',
+            test: /\.css$/,
+            use: [...CommonCSSLoader],
+          },
+          {
+            test: /\.less$/,
+            use: [
+              ...CommonCSSLoader,
+              'less-loader',
+            ],
+          },
+          {
+            test: /\.(sass|scss)$/,
+            use: [
+              ...CommonCSSLoader,
+              'sass-loader'
+            ],
+          },
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'babel-loader',
             options: {
-              outputPath: 'assets/images/',
-              limit: 6 * 1024,
-              name: '[hash:10].[ext]',
-              esModule: false,
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    useBuiltIns: 'usage',
+                    corejs: {
+                      version: 3,
+                    },
+                    targets: {
+                      chrome: '60',
+                      firefox: '50',
+                      ie: '9',
+                      safari: '10',
+                      edge: '17',
+                    },
+                  },
+                ],
+              ],
+              cacheDirectory: true,
             },
           },
           {
-            loader: 'image-webpack-loader',
-            options: {
-              /* bypassOnDebug: true,
-              disable: true, */
-              mozjpeg: {
-                progressive: true,
-                quality: 65,
-              },
-              // optipng.enabled: false will disable optipng
-              optipng: {
-                enabled: true,
-              },
-              pngquant: {
-                quality: [0.65, 0.90],
-                speed: 4,
-              },
-              gifsicle: {
-                interlaced: false,
-              },
-              // the webp option will enable WEBP
-              webp: {
-                quality: 75,
-              },
-              svgo: {
-                multipass: true, // boolean. false by default
-                datauri: 'enc', // 'base64', 'enc' or 'unenc'. 'base64' by default
-                js2svg: {
-                  indent: 2, // string with spaces or number of spaces. 4 by default
-                  pretty: true, // boolean, false by default
+            test: /\.(jpg|png|webp|gif|svg)$/,
+            use: [
+              {
+                loader: 'url-loader',
+                options: {
+                  outputPath: 'assets/images/',
+                  limit: 6 * 1024,
+                  name: '[hash:10].[ext]',
+                  esModule: false,
                 },
               },
+              {
+                loader: 'image-webpack-loader',
+                options: {
+                  /* bypassOnDebug: true,
+                  disable: true, */
+                  mozjpeg: {
+                    progressive: true,
+                    quality: 65,
+                  },
+                  // optipng.enabled: false will disable optipng
+                  optipng: {
+                    enabled: true,
+                  },
+                  pngquant: {
+                    quality: [0.65, 0.90],
+                    speed: 4,
+                  },
+                  gifsicle: {
+                    interlaced: false,
+                  },
+                  // the webp option will enable WEBP
+                  webp: {
+                    quality: 75,
+                  },
+                  svgo: {
+                    multipass: true, // boolean. false by default
+                    datauri: 'enc', // 'base64', 'enc' or 'unenc'. 'base64' by default
+                    js2svg: {
+                      indent: 2, // string with spaces or number of spaces. 4 by default
+                      pretty: true, // boolean, false by default
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          {
+            test: /\.html/,
+            loader: 'html-loader',
+          },
+          {
+            exclude: /\.(html|vue|js|css|lesssass|scss|jpg|png|webp|gif|svg)$/,
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/media/',
+              name: '[hash:10].[ext]',
             },
           },
-        ],
-      },
-      {
-        test: /\.html/,
-        loader: 'html-loader',
-      },
-      {
-        exclude: /\.(html|vue|js|css|less|jpg|png|webp|gif|svg)$/,
-        loader: 'file-loader',
-        options: {
-          outputPath: 'assets/media/',
-          name: '[hash:10].[ext]',
-        },
+        ]
       },
     ],
   },
