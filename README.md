@@ -14,6 +14,6 @@
 
 - `npm i image-webpack-loader@8.0.1 -D`
 
-- if encountered an error about `gifsicle` or `node ./install.js`
+- if encountered an error about `gifsicle` or `postinstall: node lib/install.js`
 
 - please swtich `cnpm i image-webpack-loader@8.0.1 -D` in china
